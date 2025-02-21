@@ -1,0 +1,114 @@
+area:
+  pixel_scale: 50
+  screen_size:
+  - 450
+  - 450
+display:
+  agent_size: 4
+  control_line_size: 2
+  fire_size: 2
+  rescale_factor: 2
+environment:
+  moisture: 0.003
+fire:
+  diagonal_spread: true
+  fire_initial_position:
+    random:
+      seed: 8869
+    static:
+      position:
+      - 11
+      - 28
+    type: static
+  max_fire_duration: 12
+mitigation:
+  ros_attenuation: false
+operational:
+  height: 2000
+  latitude: 33.03674915360582
+  longitude: -122.15751054994898
+  resolution: 30
+  width: 2000
+  year: 2019
+simulation:
+  data_type: npy
+  draw_spread_graph: false
+  headless: false
+  record: true
+  runtime: 16h
+  save_data: true
+  sf_home: ~/.simfire
+  update_rate: 1
+terrain:
+  fuel:
+    burn_probability:
+      functional:
+        function: gaussian
+        gaussian:
+          amplitude: 379
+          mu_x: 46
+          mu_y: 66
+          sigma_x: 97
+          sigma_y: 61
+        perlin:
+          lacunarity: 2.21
+          octaves: 6
+          persistence: 0.72
+          range_max: 238
+          range_min: 90
+          seed: 4812
+      type: operational
+    functional:
+      chaparral:
+        seed: 1781
+      function: chaparral
+    type: operational
+  topography:
+    functional:
+      function: perlin
+      gaussian:
+        amplitude: 224
+        mu_x: 50
+        mu_y: 62
+        sigma_x: 99
+        sigma_y: 47
+      perlin:
+        lacunarity: 1.97
+        octaves: 6
+        persistence: 0.63
+        range_max: 161.60302217889551
+        range_min: 72.00230470817034
+        seed: 2158
+    type: operational
+wind:
+  cfd:
+    diffusion: 0.0994023322087797
+    direction: north
+    iterations: 4
+    result_accuracy: 1
+    scale: 1
+    speed: 26
+    time_to_train: 862
+    timestep_dt: 1.3571715649534353
+    viscosity: 8.286504483296763e-05
+  function: simple
+  perlin:
+    direction:
+      lacunarity: 1.16
+      octaves: 5
+      persistence: 0.81
+      range_max: 300.4243663543008
+      range_min: 75.46669319151604
+      scale: 1687
+      seed: 1345
+    speed:
+      lacunarity: 2.68
+      octaves: 5
+      persistence: 0.75
+      range_max: 48
+      range_min: 7
+      scale: 440
+      seed: 612
+  simple:
+    direction: 200
+    speed: 79
