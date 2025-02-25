@@ -1,0 +1,8 @@
+**/.empty
+**/*cache
+**/__pycache__
+**/.vscode
+**/outputs
+**/ckpts
+**/gifs
+**/.DS_Store

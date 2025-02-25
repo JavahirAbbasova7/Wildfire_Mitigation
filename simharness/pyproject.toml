@@ -1,0 +1,55 @@
+[build-system]
+requires = ["poetry-core>=1.0.0", "swig=^4.1.1"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "simharness2"
+version = "1.0.0"
+description = "A modular reinforcement learning wrapper capable of automatically generating land management strategies within SimFire to reduce the overall damage to an area."
+authors = ["Aidan Fennelly <afennelly@mitre.org>", "Alex Tapley <atapley@mitre.org>", "Dhanuj Gandikota <dgandikota@mitre.org>", "Tim Welsh <twelsh@mitre.org>"]
+readme = "README.md"
+keywords = ["python", "reinforcement learning", "simulation", "fire"]
+repository = "https://github.com/mitrefireline/simharness"
+documentation = "https://mitrefireline.github.io/simharness"
+
+[tool.poetry.dependencies]
+python = "~3.9"
+ray = {version = "2.10.0", extras = ["default", "rllib", "tune"]}
+gymnasium = "0.28.1"
+simfire = "~2"
+aim = "^3.17.5"
+hydra-core = "^1.3.2"
+torch = "^2.1.1"
+
+[tool.poetry.group.dev.dependencies]
+bandit = {extras = ["toml"], version = "^1.7.5"}
+black = "^23.7.0"
+flake8 = "^6.0.0"
+isort = "^5.12.0"
+pre-commit = "^3.3.3"
+pytest = "^7.4.0"
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^7.2.6"
+sphinx-autoapi = "^3.0.0"
+myst-parser = "^2.0.0"
+sphinx-rtd-theme = "^1.2.2"
+
+[tool.poetry.group.coverage.dependencies]
+pytest-cov = "^4.1.0"
+
+[tool.black]
+line-length = 90
+target-version = ["py39"]
+
+[tool.isort]
+profile = "black"
+line_length = 90
+lines_after_imports = 2
+lines_between_sections = 1
+honor_noqa = true
+skip_gitignore = true
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101", "B311"]

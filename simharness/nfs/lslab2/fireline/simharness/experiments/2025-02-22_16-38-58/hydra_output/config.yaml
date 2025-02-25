@@ -1,0 +1,268 @@
+simulation:
+  simfire:
+    area:
+      screen_size:
+        _target_: builtins.tuple
+        _args_:
+        - - ${simulation.screen_height}
+          - ${simulation.screen_width}
+      pixel_scale: 50
+    display:
+      fire_size: 1
+      control_line_size: 3
+      agent_size: 4
+      rescale_factor: 4
+    simulation:
+      update_rate: 1
+      runtime: 15hr
+      headless: true
+      record: true
+      save_data: false
+      draw_spread_graph: false
+      data_type: npy
+      sf_home: ${oc.env:SF_HOME}
+    mitigation:
+      ros_attenuation: false
+    operational:
+      seed: null
+      latitude: 36.09493
+      longitude: -120.52193
+      height: ${operational_screen_size:${simulation.screen_height}}
+      width: ${operational_screen_size:${simulation.screen_width}}
+      resolution: 30
+      year: 2019
+    terrain:
+      topography:
+        type: operational
+      fuel:
+        type: operational
+    fire:
+      fire_initial_position:
+        type: static
+        static:
+          position:
+            _target_: builtins.tuple
+            _args_:
+            - - 122
+              - 122
+      max_fire_duration: 10
+      diagonal_spread: true
+    environment:
+      moisture: 0.001
+    wind:
+      function: simple
+      cfd:
+        time_to_train: 1000
+        iterations: 1
+        scale: 1
+        timestep_dt: 1.0
+        diffusion: 0.0
+        viscosity: 1.0e-07
+        speed: 19
+        direction: north
+      simple:
+        speed: 5
+        direction: 135.0
+      perlin:
+        speed:
+          seed: 2345
+          scale: 400
+          octaves: 3
+          persistence: 0.7
+          lacunarity: 2.0
+          range_min: 7
+          range_max: 47
+        direction:
+          seed: 650
+          scale: 1500
+          octaves: 2
+          persistence: 0.9
+          lacunarity: 1.0
+          range_min: 0.0
+          range_max: 360.0
+  screen_size: 128
+  screen_height: ${.screen_size}
+  screen_width: ${.screen_size}
+  fire_initial_position:
+    generator:
+      make_all_positions: false
+      output_size: 1
+      save_path: ${cli.data_dir}/simfire/data/fire_initial_positions
+    sampler:
+      resample_interval: 1
+      sample_size:
+        train: 8
+        eval: 1
+      query: 50 < elapsed_steps < 150
+      population_size: 1024
+training:
+  model:
+    conv_filters:
+    - - 16
+      - - 2
+        - 2
+      - 2
+    - - 32
+      - - 2
+        - 2
+      - 2
+    - - 64
+      - - 4
+        - 4
+      - 4
+    - - 256
+      - - 8
+        - 8
+      - 1
+  train_batch_size: 1000
+environment:
+  env: simharness2.environments.ReactiveHarness
+  render_env: false
+  clip_rewards: null
+  normalize_actions: true
+  disable_env_checking: false
+  is_atari: false
+  env_config:
+    in_evaluation: false
+    sim_init_cfg:
+      simfire_cls:
+        _target_: hydra.utils.get_class
+        path: simfire.sim.simulation.FireSimulation
+      config_dict: ${simulation.simfire}
+    movements:
+    - none
+    - up
+    - down
+    - left
+    - right
+    interactions:
+    - fireline
+    - none
+    - wetline
+    attributes:
+    - fire_map
+    - elevation
+    - w_0
+    - sigma
+    - delta
+    - M_x
+    normalized_attributes:
+    - elevation
+    agent_speed: 9
+    harness_analytics_partial:
+      _target_: simharness2.analytics.harness_analytics.ReactiveHarnessAnalytics
+      _partial_: true
+      sim_analytics_partial:
+        _target_: simharness2.analytics.simulation_analytics.FireSimulationAnalytics
+        _partial_: true
+        agent_analytics_partial:
+          _target_: simharness2.analytics.agent_analytics.ReactiveAgentAnalytics
+          _partial_: true
+          movement_types: ${....movements}
+          interaction_types: ${....interactions}
+    reward_init_cfg:
+      reward_cls:
+        _target_: hydra.utils.get_class
+        path: simharness2.rewards.base_reward.SimpleReward
+      kwargs: null
+    agent_initialization_cls:
+      _target_: hydra.utils.get_class
+      path: simharness2.agents.FixedPositionAgentInitializer
+    agent_initialization_kwargs:
+      agent_pos:
+      - - 0
+        - 64
+    action_space_cls:
+      _target_: hydra.utils.get_class
+      path: gymnasium.spaces.Discrete
+framework:
+  framework: torch
+  eager_tracing: false
+rollouts:
+  num_env_runners: 8
+  num_envs_per_env_runner: 1
+  rollout_fragment_length: auto
+  batch_mode: truncate_episodes
+  validate_env_runners_after_construction: true
+  compress_observations: false
+evaluation:
+  evaluation_config:
+    env: ${environment.env}
+    env_config:
+      in_evaluation: true
+      harness_analytics_partial:
+        sim_analytics_partial:
+          save_history: true
+    num_envs_per_env_runner: 1
+  evaluation_interval: 2
+  evaluation_duration: 1
+  evaluation_duration_unit: episodes
+  evaluation_num_workers: 1
+exploration:
+  exploration_config:
+    type: EpsilonGreedy
+    initial_epsilon: 1.0
+    final_epsilon: 0.05
+    warmup_timesteps: 1000000
+    epsilon_timesteps: 10000000
+  explore: true
+resources:
+  num_gpus: 0.4
+  num_cpus_per_worker: 1
+  num_gpus_per_worker: 0
+  num_cpus_for_local_worker: 1
+  placement_strategy: PACK
+tunables:
+  training:
+    lr:
+      type: loguniform
+      values:
+      - 0.0001
+      - 0.01
+    gamma:
+      type: uniform
+      values:
+      - 0.5
+      - 0.9
+    train_batch_size:
+      type: choice
+      values:
+      - 16
+      - 32
+      - 64
+      - 128
+aim:
+  run_hash: null
+  repo: ${cli.data_dir}/simharness/aim
+  experiment: debug_alex
+  system_tracking_interval: null
+  log_system_params: true
+  capture_terminal_logs: true
+  log_hydra_config: false
+cli:
+  mode: tune
+  data_dir: ./nfs/lslab2/fireline
+algo:
+  name: DQN
+  checkpoint_path: null
+run:
+  name: null
+  storage_path: ${hydra:run.dir}
+  log_to_file: true
+checkpoint:
+  checkpoint_frequency: 20
+  num_to_keep: null
+stop_conditions:
+  training_iteration: 4
+  timesteps_total: 2000000000
+  episodes_total: 1000000
+  episode_reward_mean: 10000000
+debugging:
+  log_level: INFO
+  log_sys_usage: true
+  seed: 2000
+  logger_config:
+    type:
+      _target_: hydra.utils.get_class
+      path: ray.tune.logger.TBXLogger
+    logdir: ${hydra:run.dir}

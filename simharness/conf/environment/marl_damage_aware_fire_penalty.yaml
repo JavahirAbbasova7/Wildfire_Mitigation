@@ -1,0 +1,9 @@
+defaults:
+  - marl_damage_aware
+  - _self_
+
+env_config:
+  reward_init_cfg:
+    reward_cls:
+      path: simharness2.rewards.MixedLocalAreaSavedRewardWithFirePenalty
+    kwargs: null
