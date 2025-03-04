@@ -28,13 +28,13 @@ def validate_evaluation_config(algo_cfg: "AlgorithmConfig"):
         ValueError: If the evaluation `WorkerSet` uses sub-environments (is vectorized).
 
     """
-    num_eval_workers = algo_cfg.evaluation_num_workers
+    num_eval_workers = 1
     eval_duration = algo_cfg.evaluation_duration
     eval_duration_unit = algo_cfg.evaluation_duration_unit
 
     use_train_local_worker = algo_cfg.create_env_on_local_worker
     use_eval_local_worker = algo_cfg.evaluation_config.get("create_env_on_local_worker")
-    envs_per_train_worker = algo_cfg.num_envs_per_worker
+    envs_per_train_worker = 1
     envs_per_eval_worker = algo_cfg.evaluation_config.get("num_envs_per_worker")
 
     if eval_duration_unit != "episodes":
@@ -92,7 +92,7 @@ def validate_evaluation_config(algo_cfg: "AlgorithmConfig"):
 
 def validate_rollouts_config(algo_cfg: "AlgorithmConfig"):
     """Ensure the configuration of rollout workers is valid."""
-    num_train_workers = algo_cfg.num_rollout_workers
+    num_train_workers = 1
     use_train_local_worker = algo_cfg.create_env_on_local_worker
 
     if num_train_workers > 0 and use_train_local_worker:
@@ -137,8 +137,9 @@ def has_local_worker(algo_cfg: "AlgorithmConfig") -> bool:
 
     Returns:
         A boolean that indicates if the respective WorkerSet uses a local worker.
-    """
-    num_workers = algo_cfg.num_rollout_workers
+    # """
+    # num_workers = algo_cfg.num_rollout_workers
+    num_workers = 1
     use_local_worker = algo_cfg.create_env_on_local_worker
     if num_workers == 0 or use_local_worker:
         return True
