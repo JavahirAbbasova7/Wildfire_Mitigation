@@ -227,7 +227,7 @@ class RenderEnv(DefaultCallbacks):
             else:
                 curr_iter = self.curr_iter
             env_episode_id = f"iter_{curr_iter}_time_{current_time}_w_{w_idx}_v_{v_idx}"
-            logdir = os.getenv("RAY_RESULTS_DIR", "/userdata/kerasData/jash/test/jash/Wildfire_Mitigation/simharness/gifs") 
+            logdir = os.getenv("RAY_RESULTS_DIR", "/userdata/kerasData/jash/test/jash/Wildfire_Mitigation/gifs") 
             gif_save_path = os.path.join(
                 logdir,
                 env_type,

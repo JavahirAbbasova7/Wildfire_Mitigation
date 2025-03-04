@@ -33,7 +33,7 @@ cli:
 algo:
   name: DQN
   # The path (str) to the checkpoint directory to use.
-  checkpoint_path: "/nfs/lslab2/fireline/simharness/experiments/2025-03-03_18-41-42/DQN_2025-03-03_18-41-44/DQN_simharness2.environments.ReactiveHarness_27e39_00000_0_gamma=0.8609,lr=0.0033,train_batch_size=128_2025-03-03_18-41-44/checkpoint_000000"
+  # checkpoint_path: "/nfs/lslab2/fireline/simharness/experiments/2025-03-03_18-41-42/DQN_2025-03-03_18-41-44/DQN_simharness2.environments.ReactiveHarness_27e39_00000_0_gamma=0.8609,lr=0.0033,train_batch_size=128_2025-03-03_18-41-44/checkpoint_000000"
 # Specify configuration used to create the ray.air.RunConfig object
 run:
   # Name of the training run (directory name)
