@@ -46,10 +46,11 @@ class RenderEnv(DefaultCallbacks):
     """To use this callback, set {"callbacks": RenderEnv} in the algo config."""
 
     def __init__(self, legacy_callbacks_dict: Dict[str, callable] = None):
-        super().__init__(legacy_callbacks_dict=legacy_callbacks_dict)
+        super().__init__()
         # Utilities used throughout methods in the callback.
         self.render_current_episode = False
         self.curr_iter = -1
+        logger.info("RenderEnv callback initialized.")
 
     def on_algorithm_init(
         self,
@@ -72,13 +73,17 @@ class RenderEnv(DefaultCallbacks):
 
         # Make the trial result path accessible to each env (for gif saving).
         logdir = algorithm.logdir
-        algorithm.workers.foreach_worker(
+        # workers = algorithm.workers  # If workers is a function that returns workers
+        # logger.info(workers)  # Log the type of the return value
+
+        # # Then if the returned object has foreach_worker:
+        algorithm.env_runner_group.foreach_worker(
             lambda w: w.foreach_env(lambda env: setattr(env, "trial_logdir", logdir)),
-            local_worker=self.has_local_train_worker,
+            # local_worker=self.has_local_train_worker,
         )
-        algorithm.evaluation_workers.foreach_worker(
+        algorithm.eval_env_runner_group.foreach_worker(
             lambda w: w.foreach_env(lambda env: setattr(env, "trial_logdir", logdir)),
-            local_worker=self.has_local_eval_worker,
+            # local_worker=self.has_local_eval_worker,
         )
 
     # def _set_trial_logdir_foreach_env(self, worker_set:)
@@ -222,6 +227,7 @@ class RenderEnv(DefaultCallbacks):
             else:
                 curr_iter = self.curr_iter
             env_episode_id = f"iter_{curr_iter}_time_{current_time}_w_{w_idx}_v_{v_idx}"
+            logdir = os.getenv("RAY_RESULTS_DIR", "/userdata/kerasData/jash/test/jash/Wildfire_Mitigation/gifs") 
             gif_save_path = os.path.join(
                 logdir,
                 env_type,
@@ -230,6 +236,7 @@ class RenderEnv(DefaultCallbacks):
                 f"fire_init_pos_x_{fire_init_pos[0]}_y_{fire_init_pos[1]}",
                 f"{env_episode_id}.gif",
             )
+            
             logger.info(f"Total environment steps: {env.timesteps}")
             logger.info(f"Saving GIF to {gif_save_path}...")
             env.sim.save_gif(gif_save_path)
@@ -273,9 +280,9 @@ class RenderEnv(DefaultCallbacks):
         # TODO: Handle edge case where num_evaluation_workers == 0.
         # Increment the number of evaluation iterations
         logger.info("Incrementing evaluation iterations...")
-        eval_iters = algorithm.evaluation_workers.foreach_worker(
+        eval_iters = algorithm.eval_env_runner_group.foreach_worker(
             lambda w: w.foreach_env(lambda env: env._increment_evaluation_iterations()),
-            local_worker=self.has_local_eval_worker,
+            # local_worker=self.has_local_eval_worker,
         )
         curr_eval_iter = {iter for iter in chain(*eval_iters)}
         if len(curr_eval_iter) > 1:
@@ -304,9 +311,9 @@ class RenderEnv(DefaultCallbacks):
         else:
             logger.warning("No result to update for each environment...")
 
-        algorithm.workers.foreach_worker(
+        algorithm.eval_env_runner_group.foreach_worker(
             lambda w: w.foreach_env(lambda env: setattr(env, "current_result", result)),
-            local_worker=self.has_local_train_worker,
+            # local_worker=self.has_local_train_worker,
         )
 
     def on_workers_recreated(
@@ -325,8 +332,8 @@ class RenderEnv(DefaultCallbacks):
         else:
             has_local_worker = self.has_local_train_worker
 
-        worker_set.foreach_worker(
+        worker_set.env_runner_group.foreach_worker(
             lambda w: w.foreach_env(lambda env: setattr(env, "trial_logdir", logdir)),
-            local_worker=has_local_worker,
+            # local_worker=has_local_worker,
             remote_worker_ids=worker_ids,
         )
