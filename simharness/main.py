@@ -330,13 +330,14 @@ def _build_algo_cfg(cfg: DictConfig) -> Tuple[Algorithm, AlgorithmConfig]:
     # Prepare training config with compatibility for old API stack replay buffer
     training_config = OmegaConf.to_container(cfg.training, resolve=True)
     # Ensure correct replay buffer type and parameters for old API
-    replay_buffer_config = training_config.get("replay_buffer_config", {})
-    replay_buffer_config["type"] = "MultiAgentPrioritizedReplayBuffer"
-    # Set default prioritized replay parameters if not provided in config
-    replay_buffer_config.setdefault("prioritized_replay_alpha", 0.6)
-    replay_buffer_config.setdefault("prioritized_replay_beta", 0.4)
-    replay_buffer_config.setdefault("prioritized_replay_eps", 1e-6)
-    training_config["replay_buffer_config"] = replay_buffer_config
+    if cfg.algo.name != "PPO":
+        replay_buffer_config = training_config.get("replay_buffer_config", {})
+        replay_buffer_config["type"] = "MultiAgentPrioritizedReplayBuffer"
+        # Set default prioritized replay parameters if not provided in config
+        replay_buffer_config.setdefault("prioritized_replay_alpha", 0.6)
+        replay_buffer_config.setdefault("prioritized_replay_beta", 0.4)
+        replay_buffer_config.setdefault("prioritized_replay_eps", 1e-6)
+        training_config["replay_buffer_config"] = replay_buffer_config
 
     algo_cfg = (
         algo_cfg.training(**training_config)

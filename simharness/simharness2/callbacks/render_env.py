@@ -233,7 +233,7 @@ class RenderEnv(DefaultCallbacks):
                 env_type,
                 "gifs",
                 op_data_lat_lon,
-                f"fire_init_pos_x_{fire_init_pos[0]}_y_{fire_init_pos[1]}",
+                f"fire_init_pos_x_{fire_init_pos[0]}_y_{fire_init_pos[1]}/latest",
                 f"{env_episode_id}.gif",
             )
             
