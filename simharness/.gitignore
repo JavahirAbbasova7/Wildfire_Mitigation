@@ -6,3 +6,6 @@
 **/ckpts
 **/gifs
 **/.DS_Store
+**/file:
+**/file:/nfs/lslab2/fireline/simharness/experiments
+**/file:/nfs/lslab2/fireline/simharness/aim

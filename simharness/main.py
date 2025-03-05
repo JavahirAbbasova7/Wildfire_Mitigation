@@ -353,12 +353,15 @@ def _build_algo_cfg(cfg: DictConfig) -> Tuple[Algorithm, AlgorithmConfig]:
         .resources(**cfg.resources)
         .debugging(**debug_settings)
     )
-
+    # callbacks = [RenderEnv]
     # Add callbacks to the algorithm config if they are specified in the config.
     # NOTE: Callbacks are run in the order they are specified in the config.
     if "callbacks" in cfg.algo:
-        callbacks = [instantiate(c) for c in cfg.algo.callbacks]
+        logging.info("Adding callbacks to the algorithm config.")
+        callbacks1 = [instantiate(c) for c in cfg.algo.callbacks]
+        callbacks.extend(callbacks1)
         algo_cfg = algo_cfg.callbacks(make_multi_callbacks(callbacks))
+    algo_cfg = algo_cfg.callbacks(RenderEnv)
 
     # Add multi agent settings if needed for the specified environment.
     env_module, env_cls = cfg.environment.env.rsplit(".", 1)
