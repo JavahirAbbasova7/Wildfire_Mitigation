@@ -18,7 +18,7 @@ from typing import (
     TypeVar,
     TYPE_CHECKING,
 )
-
+import yaml
 import numpy as np
 from gymnasium import spaces
 from simfire.enums import BurnStatus
@@ -72,10 +72,12 @@ class FireHarness(Harness[AnyFireSimulation]):
         # TODO: Define `benchmark_sim` in `DamageAwareReactiveHarness`.
         # Define attributes that are specific to the FireHarness.
         # Use provided benchmark simulation info to create a simulation object.
+        benchmark_sim_init_cfg = sim_init_cfg.copy()
         self.benchmark_sim = env_utils.create_fire_simulation_from_config(
             benchmark_sim_init_cfg
         )
-        # TODO: use more apt name, ex: `available_movements`, `possible_movements`.
+    
+            # TODO: use more apt name, ex: `available_movements`, `possible_movements`.
         self.movements = copy.deepcopy(movements)  # FIXME: is deepcopy necessary?
         # TODO: use more apt name, ex: `available_interactions`, `possible_interactions`.
         self.interactions = copy.deepcopy(interactions)  # FIXME: is deepcopy necessary?

@@ -413,7 +413,7 @@ def main(cfg: DictConfig) -> None:
             ckpt_path = cfg.algo.checkpoint_path
             LOGGER.info(f"Creating an algorithm instance from {ckpt_path}.")
 
-            if not os.path.isfile(ckpt_path):
+            if not os.path.isdir(ckpt_path):
                 raise ValueError(f"{ckpt_path} is not a valid file path.")
 
             algo.restore(checkpoint_path=ckpt_path)

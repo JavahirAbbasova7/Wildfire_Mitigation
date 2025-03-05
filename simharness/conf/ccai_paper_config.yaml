@@ -33,7 +33,11 @@ environment:
     reward_cls_partial:
       _target_: simharness2.rewards.base_reward.AreaSavedPropReward
       _partial_: true
-    benchmark_sim: ${.sim} # FIXME: Verify this interpolation works as expected.
+    benchmark_sim:
+      simfire_cls:
+        _target_: hydra.utils.get_class
+        path: simfire.sim.simulation.FireSimulation
+      config_dict: ${simulation.simfire} # FIXME: Verify this interpolation works as expected.
 
 evaluation:
   evaluation_config:
@@ -51,7 +55,7 @@ exploration:
     epsilon_timesteps: 8755200
 
 resources:
-  num_gpus: 1
+  num_gpus: 2
 
 simulation:
   train:

@@ -1,5 +1,5 @@
 # Number of GPUs to allocate to the algorithm process.
-num_gpus: 0.4
+num_gpus: 2
 # Number of CPUs to allocate per worker.
 num_cpus_per_worker: 1
 # Number of GPUs to allocate per worker. This can be fractional. This is usually needed
@@ -22,4 +22,4 @@ num_cpus_for_local_worker: 1
 # - “STRICT_PACK”: Packs bundles into one node. The group is not allowed to span multiple
 #    nodes.
 # “STRICT_SPREAD”: Packs bundles across distinct nodes.
-placement_strategy: "PACK"
+placement_strategy: "SPREAD"

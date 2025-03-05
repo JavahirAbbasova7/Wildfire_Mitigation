@@ -5,18 +5,18 @@ area:
   pixel_scale: 50
 
 display:
-  fire_size: 1
+  fire_size: 5
   control_line_size: 3
-  agent_size: 4
+  agent_size: 1
   rescale_factor: 4
 
 simulation:
   update_rate: 1
   runtime: 15hr
-  headless: true
+  headless: false
   record: true
   save_data: false
-  draw_spread_graph: false
+  draw_spread_graph: true
   data_type: "npy"
   # NOTE: Below path isn't used to save gifs; we specify `save_path` via `save_gif(path)`
   sf_home: ${oc.env:SF_HOME}
